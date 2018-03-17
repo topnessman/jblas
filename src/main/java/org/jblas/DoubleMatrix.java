@@ -1,27 +1,27 @@
 // --- BEGIN LICENSE BLOCK ---
-/* 
+/*
  * Copyright (c) 2009, Mikio L. Braun
  * Copyright (c) 2008, Johannes Schaback
  * Copyright (c) 2009, Jan Saputra Müller
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
- * 
+ *
  *     * Redistributions in binary form must reproduce the above
  *       copyright notice, this list of conditions and the following
  *       disclaimer in the documentation and/or other materials provided
  *       with the distribution.
- * 
+ *
  *     * Neither the name of the Technische Universität Berlin nor the
  *       names of its contributors may be used to endorse or promote
  *       products derived from this software without specific prior
  *       written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -37,6 +37,7 @@
 // --- END LICENSE BLOCK ---
 package org.jblas;
 
+import org.checkerframework.checker.initialization.qual.UnderInitialization;
 import org.jblas.exceptions.SizeException;
 import org.jblas.ranges.Range;
 import org.jblas.util.Random;
@@ -64,17 +65,17 @@ import java.util.regex.Pattern;
 
 /**
  * A general matrix class for <tt>double</tt> typed values.
- * 
+ *
  * Don't be intimidated by the large number of methods this function defines. Most
  * are overloads provided for ease of use. For example, for each arithmetic operation,
  * up to six overloaded versions exist to handle in-place computations, and
  * scalar arguments (like adding a number to all elements of a matrix).
- * 
+ *
  * <h3>Construction</h3>
- * 
+ *
  * <p>To construct a two-dimensional matrices, you can use the following constructors
  * and static methods.</p>
- * 
+ *
  * <table class="my">
  * <tr><th>Method<th>Description
  * <tr><td>DoubleMatrix(m,n, [value1, value2, value3...])<td>Values are filled in column by column.
@@ -86,10 +87,10 @@ import java.util.regex.Pattern;
  * <tr><td>DoubleMatrix.eye(n) <td>Unit matrix (values 0.0 except for 1.0 on the diagonal).
  * <tr><td>DoubleMatrix.diag(array) <td>Diagonal matrix with given diagonal elements.
  * </table>
- * 
+ *
  * <p>Alternatively, you can construct (column) vectors, if you just supply the length
  * using the following constructors and static methods.</p>
- * 
+ *
  * <table class="my">
  * <tr><th>Method</th>                        <th>Description</th></tr>
  * <tr><td>DoubleMatrix(m)</td>               <td>Constructs a column vector.</td></tr>
@@ -101,21 +102,21 @@ import java.util.regex.Pattern;
  * <tr><td>DoubleMatrix.linspace(a, b, n)</td><td>n linearly spaced values from a to b.</td></tr>
  * <tr><td>DoubleMatrix.logspace(a, b, n)</td><td>n logarithmically spaced values form 10^a to 10^b.</td></tr>
  * </table>
- * 
+ *
  * <p>You can also construct new matrices by concatenating matrices either horziontally
  * or vertically:</p>
- * 
+ *
  * <table class="my">
  * <tr><th>Method<th>Description
  * <tr><td>x.concatHorizontally(y)<td>New matrix will be x next to y.
  * <tr><td>x.concatVertically(y)<td>New matrix will be x atop y.
  * </table>
- * 
+ *
  * <h3>Element Access, Copying and Duplication</h3>
- * 
+ *
  * <p>To access individual elements, or whole rows and columns, use the following
  * methods:<p>
- * 
+ *
  * <table class="my">
  * <tr><th>x.Method<th>Description
  * <tr><td>x.get(i,j)<td>Get element in row i and column j.
@@ -129,17 +130,17 @@ import java.util.regex.Pattern;
  * <tr><td>x.swapColumns(i, j)<td>Swap the contents of columns i and j.
  * <tr><td>x.swapRows(i, j)<td>Swap the contents of rows i and j.
  * </table>
- * 
+ *
  * <p>For <tt>get</tt> and <tt>put</tt>, you can also pass integer arrays,
- * DoubleMatrix objects, or Range objects, which then specify the indices used 
+ * DoubleMatrix objects, or Range objects, which then specify the indices used
  * as follows:
- * 
+ *
  * <ul>
  * <li><em>integer array:</em> the elements will be used as indices.
  * <li><em>DoubleMatrix object:</em> non-zero entries specify the indices.
  * <li><em>Range object:</em> see below.
  * </ul>
- * 
+ *
  * <p>When using <tt>put</tt> with multiple indices, the assigned object must
  * have the correct size or be a scalar.</p>
  *
@@ -154,19 +155,19 @@ import java.util.regex.Pattern;
  * <tr><td>indices(DoubleMatrix)<td>The specified indices.
  * <tr><td>find(DoubleMatrix)<td>The non-zero entries of the matrix.
  * </table>
- * 
+ *
  * <p>The following methods can be used for duplicating and copying matrices.</p>
- * 
+ *
  * <table class="my">
  * <tr><th>Method<th>Description
  * <tr><td>x.dup()<td>Get a copy of x.
  * <tr><td>x.copy(y)<td>Copy the contents of y to x (possible resizing x).
  * </table>
- *    
+ *
  * <h3>Size and Shape</h3>
- * 
+ *
  * <p>The following methods permit to access the size of a matrix and change its size or shape.</p>
- * 
+ *
  * <table class="my">
  * <tr><th>x.Method<th>Description
  * <tr><td>x.rows<td>Number of rows.
@@ -181,23 +182,23 @@ import java.util.regex.Pattern;
  * <tr><td>x.resize(r, c)<td>Resize the matrix to r rows and c columns, discarding the content.
  * <tr><td>x.reshape(r, c)<td>Resize the matrix to r rows and c columns.<br> Number of elements must not change.
  * </table>
- * 
+ *
  * <p>The size is stored in the <tt>rows</tt> and <tt>columns</tt> member variables.
  * The total number of elements is stored in <tt>length</tt>. Do not change these
  * values unless you know what you're doing!</p>
- * 
+ *
  * <h3>Arithmetics</h3>
- * 
+ *
  * <p>The usual arithmetic operations are implemented. Each operation exists in a
  * in-place version, recognizable by the suffix <tt>"i"</tt>, to which you can supply
  * the result matrix (or <tt>this</tt> is used, if missing). Using in-place operations
  * can also lead to a smaller memory footprint, as the number of temporary objects is
  * reduced (although the JVM garbage collector is usually pretty good at reusing these
  * temporary object immediately with little overhead.)</p>
- * 
+ *
  * <p>Whenever you specify a result vector, the result vector must already have the
  * correct dimensions.</p>
- * 
+ *
  * <p>For example, you can add two matrices using the <tt>add</tt> method. If you want
  * to store the result in of <tt>x + y</tt> in <tt>z</tt>, type
  * <span class=code>
@@ -207,29 +208,29 @@ import java.util.regex.Pattern;
  * for example:
  * <span class=code>
  * x.addi(y).addi(z) // computes x += y; x += z
- * </span></p> 
+ * </span></p>
  *
  * <p>Methods which operate element-wise only make sure that the length of the matrices
  * is correct. Therefore, you can add a 3 * 3 matrix to a 1 * 9 matrix, for example.</p>
- * 
+ *
  * <p>Finally, there exist versions which take doubles instead of DoubleMatrix Objects
  * as arguments. These then compute the operation with the same value as the
  * right-hand-side. The same effect can be achieved by passing a DoubleMatrix with
  * exactly one element.</p>
- * 
+ *
  * <table class="my">
  * <tr><th>Operation <th>Method <th>Comment
  * <tr><td>x + y <td>x.add(y)			<td>
  * <tr><td>x - y <td>x.sub(y), y.rsub(x) <td>rsub subtracts left from right hand side
- * <tr><td rowspan=3>x * y 	<td>x.mul(y) <td>element-wise multiplication 
+ * <tr><td rowspan=3>x * y 	<td>x.mul(y) <td>element-wise multiplication
  * <tr>                     <td>x.mmul(y)<td>matrix-matrix multiplication
  * <tr>                     <td>x.dot(y) <td>scalar-product
  * <tr><td>x / y <td>x.div(y), y.rdiv(x) <td>rdiv divides right hand side by left hand side.
  * <tr><td>- x	 <td>x.neg()				<td>
  * </table>
- * 
+ *
  * <p>There also exist operations which work on whole columns or rows.</p>
- * 
+ *
  * <table class="my">
  * <tr><th>Method</th>           <th>Description</th></tr>
  * <tr><td>x.addRowVector</td>   <td>adds a vector to each row (addiRowVector works in-place)</td></tr>
@@ -243,12 +244,12 @@ import java.util.regex.Pattern;
  * <tr><td>x.mulRow</td>         <td>Multiplies a row by a scalar</td></tr>
  * <tr><td>x.mulColumn</td>      <td>Multiplies a column by a scalar</td></tr>
  * </table>
- * 
- * <p>In principle, you could achieve the same result by first calling getColumn(), 
+ *
+ * <p>In principle, you could achieve the same result by first calling getColumn(),
  * adding, and then calling putColumn, but these methods are much faster.</p>
- * 
+ *
  * <p>The following comparison operations are available</p>
- *  
+ *
  * <table class="my">
  * <tr><th>Operation <th>Method
  * <tr><td>x &lt; y		<td>x.lt(y)
@@ -262,7 +263,7 @@ import java.util.regex.Pattern;
  * <p> Logical operations are also supported. For these operations, a value different from
  * zero is treated as "true" and zero is treated as "false". All operations are carried
  * out elementwise.</p>
- * 
+ *
  * <table class="my">
  * <tr><th>Operation <th>Method
  * <tr><td>x & y 	<td>x.and(y)
@@ -270,9 +271,9 @@ import java.util.regex.Pattern;
  * <tr><td>x ^ y	<td>x.xor(y)
  * <tr><td>! x		<td>x.not()
  * </table>
- * 
+ *
  * <p>Finally, there are a few more methods to compute various things:</p>
- * 
+ *
  * <table class="my">
  * <tr><th>Method <th>Description
  * <tr><td>x.max() <td>Return maximal element
@@ -284,7 +285,7 @@ import java.util.regex.Pattern;
  * <tr><td>x.columnMaxs() <td>Return column-wise maxima
  * <tr><td>x.columnArgmaxs() <td>Return column-wise index of maxima
  * </table>
- * 
+ *
  * @author Mikio Braun, Johannes Schaback
  */
 public class DoubleMatrix implements Serializable {
@@ -357,7 +358,7 @@ public class DoubleMatrix implements Serializable {
     public DoubleMatrix(int len) {
         this(len, 1, new double[len]);
     }
-    
+
     /**
      * Create a a column vector using <i>newData</i> as the data array.
      * Note that any change to the created DoubleMatrix will change in input array.
@@ -1187,7 +1188,7 @@ public class DoubleMatrix implements Serializable {
         hash = 83 * hash + Arrays.hashCode(this.data);
         return hash;
     }
-    
+
     /** Resize the matrix. All elements will be set to zero. */
     public void resize(int newRows, int newColumns) {
         rows = newRows;
@@ -2226,7 +2227,7 @@ public class DoubleMatrix implements Serializable {
         return SimpleBlas.dot(this, other);
     }
 
-    /** 
+    /**
      * Computes the projection coefficient of other on this.
      *
      * The returned scalar times <tt>this</tt> is the orthogonal projection
@@ -2739,7 +2740,7 @@ public class DoubleMatrix implements Serializable {
      * @param dis the data input stream to read from.
      * @throws IOException
      */
-    public void in(DataInputStream dis) throws IOException {
+    public void in(@UnderInitialization DoubleMatrix this, DataInputStream dis) throws IOException {
         if (!dis.readUTF().equals("double")) {
             throw new IllegalStateException("The matrix in the specified file is not of the correct type!");
         }
@@ -2776,7 +2777,7 @@ public class DoubleMatrix implements Serializable {
      * @param filename the file to read the matrix from
      * @throws IOException thrown on errors while reading the matrix
      */
-    public void load(String filename) throws IOException {
+    public void load(@UnderInitialization DoubleMatrix this, String filename) throws IOException {
         FileInputStream fis = new FileInputStream(filename);
         DataInputStream dis = new DataInputStream(fis);
         try {
